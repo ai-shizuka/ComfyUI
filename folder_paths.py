@@ -34,6 +34,10 @@ folder_names_and_paths["photomaker"] = ([os.path.join(models_dir, "photomaker")]
 
 folder_names_and_paths["classifiers"] = ([os.path.join(models_dir, "classifiers")], {""})
 
+folder_names_and_paths["bria"] = ([os.path.join(models_dir, "bria")], supported_pt_extensions)
+
+folder_names_and_paths["wd14_tagger"] = ([os.path.join(models_dir, "wd14_tagger")], supported_pt_extensions)
+
 output_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), "output")
 temp_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), "temp")
 input_directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), "input")
