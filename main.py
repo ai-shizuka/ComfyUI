@@ -90,6 +90,18 @@ def cuda_malloc_warning():
         if cuda_malloc_warning:
             logging.warning("\nWARNING: this card most likely does not support cuda-malloc, if you get \"CUDA error\" please run ComfyUI with: --disable-cuda-malloc\n")
 
+def get_batch_manager(prompt):
+    result = None
+    key = None
+    for k in prompt:
+        v = prompt[k]
+        class_type = v['class_type']
+        if class_type == 'BatchManager':
+            result = v
+            key = k
+            break
+    return (key, result)
+
 def prompt_worker(q, server):
     e = execution.PromptExecutor(server)
     last_gc_collect = 0
@@ -117,7 +129,12 @@ def prompt_worker(q, server):
                             completed=e.success,
                             messages=e.status_messages))
             if server.client_id is not None:
-                server.send_sync("executing", { "node": None, "prompt_id": prompt_id }, server.client_id)
+                event = { "node": None, "prompt_id": prompt_id }
+                (unique_id, batch_inputs) = get_batch_manager(item[2])
+                if unique_id != None :
+                    batch = e.outputs[unique_id][0][0]
+                    event['batch_closed'] = batch.has_closed_inputs
+                server.send_sync("executing", event, server.client_id)
 
             current_time = time.perf_counter()
             execution_time = current_time - execution_start_time
